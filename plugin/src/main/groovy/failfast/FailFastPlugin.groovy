@@ -27,7 +27,7 @@ class FailFastPlugin implements Plugin<Project> {
         }
 
         project.dependencies {
-            debugCompile 'com.nhaarman.failfast:lib:0.0.1@aar'
+            debugCompile 'com.nhaarman.failfast:lib:0.0.2-SNAPSHOT@aar'
             // TODO this should come transitively
             debugCompile 'org.aspectj:aspectjrt:1.8.1'
         }
