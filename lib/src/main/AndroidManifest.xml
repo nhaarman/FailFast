@@ -1,0 +1,8 @@
+<manifest
+    package="com.nhaarman.failfast"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-sdk android:minSdkVersion="7" />
+    <application android:allowBackup="true" />
+
+</manifest>

@@ -1,0 +1,33 @@
+language: android
+jdk: oraclejdk7
+
+env:
+  matrix:
+    - ANDROID_TARGET=20 LINT=true MAVEN=true
+  global:
+    - TERM=dumb
+    - COMPONENTS=build-tools-20.0.0,android-20,extra-android-m2repository,extra-android-support,extra-google-m2repository
+    - LICENSES="android-sdk-license-5be876d5|android-sdk-preview-license-52d11cd2"
+    # nexusUsername
+    - secure: "rnjWGRYE97mRsPQcbgECgayoULEqZIDQKF+PRXV14knH8+v72dtKzBhH3StVNFuHS1nUjj/iD3gWrfZLIjQY3zHFYxyESdVLA+EtIbMRfrsDWVD+C9QN9Ht0B7MbDuI1ukDARGB5ZTGtqnXjQgftXi+7tdnI6PmwuMoA7e0Ytxg="
+    # nexusPassword
+    - secure: "fqvcKQJ56kNNn0MMDxKeS+9ryDQJwUMxMumdJrF0Qt8UmKbNFQU80Y+Wny9UseWGAGYZ7goDt1ZisOfiKdHlN2D8R6qoCYblCVCwUTwlHXe8uRsZOaBKr0tZGWJGMH5xbf4FXgV4g6k7D/iwArmeRED4E1t466K1Vd6Jr4pxncA="
+
+before_install:
+  - curl -3L https://raw.github.com/embarkmobile/android-sdk-installer/version-2/android-sdk-installer | bash /dev/stdin --install=$COMPONENTS,android-$ANDROID_TARGET,sys-img-armeabi-v7a-android-$ANDROID_TARGET --accept=$LICENSES && source ~/.android-sdk-installer/env
+
+before_script:
+  # Downloads gradle stuff
+  - gradle
+
+install:
+ - true
+
+script:
+  - if [[ $LINT == 'true' ]]; then gradle lint ; fi
+
+after_success:
+  - if [[ $MAVEN == 'true' && $TRAVIS_BRANCH == 'dev' && $TRAVIS_PULL_REQUEST == 'false' ]]; then gradle clean generateReleaseJavadoc assemble uploadArchives; fi
+
+notifications:
+  email: false

@@ -1,0 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+        classpath 'com.android.tools.build:gradle:0.12.2'
+        classpath 'org.aspectj:aspectjtools:1.8.1'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    group = GROUP
+    version = VERSION_NAME
+}
