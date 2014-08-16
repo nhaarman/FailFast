@@ -1,33 +1,29 @@
 language: android
 jdk: oraclejdk7
-
 env:
   matrix:
-    - ANDROID_TARGET=20 LINT=true MAVEN=true
+  - ANDROID_TARGET=20 LINT=true MAVEN=true
   global:
-    - TERM=dumb
-    - COMPONENTS=build-tools-20.0.0,android-20,extra-android-m2repository,extra-android-support,extra-google-m2repository
-    - LICENSES="android-sdk-license-5be876d5|android-sdk-preview-license-52d11cd2"
-    # nexusUsername
-    - secure: "rnjWGRYE97mRsPQcbgECgayoULEqZIDQKF+PRXV14knH8+v72dtKzBhH3StVNFuHS1nUjj/iD3gWrfZLIjQY3zHFYxyESdVLA+EtIbMRfrsDWVD+C9QN9Ht0B7MbDuI1ukDARGB5ZTGtqnXjQgftXi+7tdnI6PmwuMoA7e0Ytxg="
-    # nexusPassword
-    - secure: "fqvcKQJ56kNNn0MMDxKeS+9ryDQJwUMxMumdJrF0Qt8UmKbNFQU80Y+Wny9UseWGAGYZ7goDt1ZisOfiKdHlN2D8R6qoCYblCVCwUTwlHXe8uRsZOaBKr0tZGWJGMH5xbf4FXgV4g6k7D/iwArmeRED4E1t466K1Vd6Jr4pxncA="
-
+  - TERM=dumb
+  - COMPONENTS=build-tools-20.0.0,android-20,extra-android-m2repository,extra-android-support,extra-google-m2repository
+  - LICENSES="android-sdk-license-5be876d5|android-sdk-preview-license-52d11cd2"
+  # nexusUsername
+  - secure: vq6VqKOxxOWi2jp6IwqWJyyEUDqc8ijCjBxn2R9JQqqiJMnyj3e+MkYGnCTpZxrs5H6OakeBR2S5vYg0vVXoYuSSQTIkYQk9tbR5haKsSsXV8Fs6xj+si2C8D0ZoIn8QIrCeKT2SNEBH4lWLXoivl64bGs0j/U7HRKIYRs5hmV4=
+  # nexusPassword
+  - secure: hnVoFZQUiM7plZfOrZ8asfOv2r9kLuXFc9HLLejyOx57ZVFjSdhIiD8pEEtnEKb71hGHwcxiyYPBs10Rripk8Z4d1vboTl7RyMLdd0VkH1Poy9xsi1yZhobCvZLyhMcdSOwQwsjK9AP/zVrc6qsmz5liNDUmfNnDNeJeVDKmifs=
 before_install:
-  - curl -3L https://raw.github.com/embarkmobile/android-sdk-installer/version-2/android-sdk-installer | bash /dev/stdin --install=$COMPONENTS,android-$ANDROID_TARGET,sys-img-armeabi-v7a-android-$ANDROID_TARGET --accept=$LICENSES && source ~/.android-sdk-installer/env
-
+- curl -3L https://raw.github.com/embarkmobile/android-sdk-installer/version-2/android-sdk-installer
+  | bash /dev/stdin --install=$COMPONENTS,android-$ANDROID_TARGET,sys-img-armeabi-v7a-android-$ANDROID_TARGET
+  --accept=$LICENSES && source ~/.android-sdk-installer/env
 before_script:
-  # Downloads gradle stuff
-  - gradle
-
+- gradle
 install:
- - true
-
+- true
 script:
-  - if [[ $LINT == 'true' ]]; then gradle lint ; fi
-
+- if [[ $LINT == 'true' ]]; then gradle lint ; fi
 after_success:
-  - if [[ $MAVEN == 'true' && $TRAVIS_BRANCH == 'dev' && $TRAVIS_PULL_REQUEST == 'false' ]]; then gradle clean generateReleaseJavadoc assemble uploadArchives; fi
-
+- if [[ $MAVEN == 'true' && $TRAVIS_BRANCH == 'dev' && $TRAVIS_PULL_REQUEST == 'false'
+  ]]; then gradle clean uploadArchives -PnexusUsername=$nexusUsername -PnexusPassword=$nexusPassword --info
+  ; fi
 notifications:
   email: false
