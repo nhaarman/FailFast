@@ -22,7 +22,7 @@ import org.aspectj.lang.reflect.CodeSignature;
 @SuppressWarnings({"UnusedDeclaration", "MethodMayBeStatic", "MethodWithTooManyParameters", "StandardVariableNames"})
 public class NullChecker {
 
-    private static final String PRECONDITION_VIOLATED_MESSAGE = "Parameter \"%s\" of method \"%s\" was specified as @NotNull, but null was given.";
+    private static final String PRECONDITION_VIOLATED_MESSAGE = "Parameter %d of %d: \"%s\" of method \"%s\" was specified as @NotNull, but null was given.";
 
     private static final String POSTCONDITION_VIOLATED_MESSAGE = "Result of method \"%s\" was specified as @NotNull, but null was returned.";
 
@@ -93,17 +93,18 @@ public class NullChecker {
     /**
      * Checks if parameter {@code o} is {@code null}, and if so, throws a {@link java.lang.NullPointerException}.
      *
-     * @param joinPoint the {@link org.aspectj.lang.JoinPoint}.
-     * @param o the {@code Object} to check for nullity.
+     * @param joinPoint   the {@link org.aspectj.lang.JoinPoint}.
+     * @param o           the {@code Object} to check for nullity.
      * @param paramNumber the number of the parameter in the method signature.
      */
     private static void checkPreCondition(final JoinPoint joinPoint, final Object o, final int paramNumber) {
         if (o == null) {
             CodeSignature signature = (CodeSignature) joinPoint.getSignature();
             String argName = signature.getParameterNames()[paramNumber];
-            String methodName = signature.getName();
+            String signatureString = signature.toString();
+            int numParams = signature.getParameterNames().length;
 
-            String message = String.format(PRECONDITION_VIOLATED_MESSAGE, argName, methodName);
+            String message = String.format(PRECONDITION_VIOLATED_MESSAGE, paramNumber + 1, numParams, argName, signatureString);
             throwNullPointerException(message, 4);
         }
     }
@@ -112,14 +113,14 @@ public class NullChecker {
      * Checks if {@code r} is {@code null}, and if so, throws a {@link java.lang.NullPointerException}.
      *
      * @param joinPoint the {@link org.aspectj.lang.JoinPoint}.
-     * @param r the {@code Object} to check for nullity.
+     * @param r         the {@code Object} to check for nullity.
      */
     private static void checkPostCondition(final JoinPoint joinPoint, final Object r) {
         if (r == null) {
             Signature signature = joinPoint.getSignature();
-            String methodName = signature.getName();
+            String signatureString = signature.toString();
 
-            String message = String.format(POSTCONDITION_VIOLATED_MESSAGE, methodName);
+            String message = String.format(POSTCONDITION_VIOLATED_MESSAGE, signatureString);
             throwNullPointerException(message, 3);
         }
     }
@@ -127,7 +128,7 @@ public class NullChecker {
     /**
      * Throws a {@link java.lang.NullPointerException}, and strips {@code stripHeadSize} lines from the top of the {@code StackTrace}.
      *
-     * @param message the message to supply to the {@code NullPointerException}.
+     * @param message       the message to supply to the {@code NullPointerException}.
      * @param stripHeadSize the number of elements to remove from the top of the {@code StackTrace}.
      */
     private static void throwNullPointerException(final String message, final int stripHeadSize) {
