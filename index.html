@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Failfast by nhaarman</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Failfast</h1>
+        <h2>Implicit fast fail checks for method contracts in Android</h2>
+        <a href="https://github.com/nhaarman/FailFast" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="failfast" class="anchor" href="#failfast"><span class="octicon octicon-link"></span></a>FailFast</h1>
+
+<p><em>FailFast</em> provides implicit contract checks to your methods.</p>
+
+<p>IntelliJ and Android Studio provide static inspections for methods and parameters annotated with <code>@NotNull</code>. When a method is called with a <code>null</code> value to a parameter marked as <code>NotNull</code>, a warning is presented. </p>
+
+<p>This is not enforced however, and <code>null</code> can be passed, possibly leading to errors which can be hard to debug. A solution is to check each and every parameter which is annotated as <code>NotNull</code>:</p>
+
+<div class="highlight highlight-java"><pre><span class="kd">public</span> <span class="kt">void</span> <span class="nf">myMethod</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">message</span><span class="o">){</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">message</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">"message == null"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/* Rest of method */</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>This fast fail method is an excellent way to prevent those hard to debug errors. Unfortunately, it requires you writing a lot of code, and it doesn't get your code any cleaner.</p>
+
+<p><em>FailFast</em> injects these snippets for you compile time, so you don't have to, and your source code stays clean.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Just annotate your methods and parameters with the <code>@NotNull</code> annotation, and <em>FailFast</em> will do the rest:</p>
+
+<div class="highlight highlight-java"><pre><span class="nd">@NotNull</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">concatenate</span><span class="o">(</span><span class="nd">@NotNull</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">first</span><span class="o">,</span> <span class="nd">@NotNull</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">first</span><span class="o">.</span><span class="na">concat</span><span class="o">(</span><span class="n">second</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>Whenever the <code>concatenate</code> method is called with a <code>null</code> value, <code>FailFast</code> will throw a <code>NullPointerException</code>:</p>
+
+<div class="highlight highlight-java"><pre><span class="n">concatenate</span><span class="o">(</span><span class="s">"Hello"</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+
+<span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">NullPointerException</span><span class="o">:</span> <span class="n">Parameter</span> <span class="s">"second"</span> <span class="n">of</span> <span class="n">method</span> <span class="s">"concatenate"</span> <span class="n">was</span> <span class="n">specified</span> <span class="n">as</span> <span class="nd">@NotNull</span><span class="o">,</span> <span class="n">but</span> <span class="kc">null</span> <span class="n">was</span> <span class="n">given</span><span class="o">.</span>
+    <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">myApp</span><span class="o">.</span><span class="na">MyActivity</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">MyActivity</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">19</span><span class="o">)</span>
+</pre></div>
+
+<h2>
+<a name="setup" class="anchor" href="#setup"><span class="octicon octicon-link"></span></a>Setup</h2>
+
+<div class="highlight highlight-groovy"><pre><span class="n">buildscript</span> <span class="o">{</span>
+  <span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">mavenCentral</span><span class="o">()</span>
+  <span class="o">}</span>
+
+  <span class="n">dependencies</span> <span class="o">{</span>
+    <span class="n">classpath</span> <span class="s1">'com.nhaarman.failfast:plugin:0.0.1'</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'com.android.application'</span>
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'com.nhaarman.failfast'</span>
+</pre></div>
+
+<h2>
+<a name="supported-annotations" class="anchor" href="#supported-annotations"><span class="octicon octicon-link"></span></a>Supported annotations:</h2>
+
+<ul>
+<li><code>org.jetbrains.annotations.NotNull</code></li>
+<li><code>android.support.annotation.NonNull</code></li>
+</ul><h2>
+<a name="contribute" class="anchor" href="#contribute"><span class="octicon octicon-link"></span></a>Contribute</h2>
+
+<p>Please do! I'm happy to review and accept pull requests.<br>
+Please read <a href="https://github.com/nhaarman/FailFast/blob/master/CONTRIBUTING.md">Contributing</a> before you do.</p>
+
+<h2>
+<a name="developed-by" class="anchor" href="#developed-by"><span class="octicon octicon-link"></span></a>Developed By</h2>
+
+<ul>
+<li>Niek Haarman</li>
+</ul><h2>
+<a name="special-thanks" class="anchor" href="#special-thanks"><span class="octicon octicon-link"></span></a>Special Thanks</h2>
+
+<ul>
+<li>Jake Warthon - Project setup is based on <a href="https://github.com/JakeWharton/hugo">Hugo</a>.</li>
+<li><a href="https://github.com/nhaarman/FailFast/graphs/contributors">Contributors</a></li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<pre><code>Copyright 2014 Niek Haarman
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</code></pre>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/nhaarman/FailFast/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/nhaarman/FailFast/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/nhaarman/FailFast"></a> is maintained by <a href="https://github.com/nhaarman">nhaarman</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-39653306-9");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
