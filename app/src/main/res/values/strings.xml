@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2014 Niek Haarman
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <string name="app_name">FailFast</string>
+
+    <string name="menu_toggle_failfast">Toggle FailFast</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_github">Github</string>
+
+    <string name="stacktrace_normal">NullPointerException\n at ObjectPrinter.print(ObjectPrinter.java:42)\n at MainActivity.print(MainActivity.java:38)</string>
+    <string name="stacktrace_failfast">NullPointerException:\n Parameter 1 of 1:\n\n  \'object\'\n\n of method\n\n  \'void ObjectPrinter.setObject(Object)\'\n\n was specified as @NotNull,\n but null was given.\nat MainActivity.doStuff(MainActivity.java:47)</string>
+    <string name="nullpointerexception">NullPointerException</string>
+
+    <string name="did_stuff">Did stuff</string>
+    <string name="enabled_failfast">Enabled FailFast</string>
+    <string name="disabled_failfast">Disabled FailFast</string>
+    <string name="help_intro">FailFast provides implicit contract checks to your methods. By adding @NotNull annotations where necessary, FailFast will automatically add fast failing checks to your compiled code.</string>
+    <string name="help_explanation">In this example application, the ObjectPrinter class can show the toString() value of an Object as a Toast message. However, it depends on the Object being printed to be non-null.</string>
+    <string name="help_buttons">The buttons \'print()\' and \'doStuff()\' correspond to the methods as shown in MainActivity. In fact, doStuff() introduces a bug, which will
+        crash the application. Based on whether or not you have enabled FailFast using the cirle in the ActionBar, it will throw a NullPointerException on print() (normal
+        behavior), or on doStuff() (FailFast behavior).</string>
+    <string name="help_finish">Use the circle in the ActionBar to toggle FailFast functionality, and see what happens!</string>
+    <string name="help_gotit">Got it!</string>
+    <string name="print">print()</string>
+    <string name="do_stuff">doStuff()</string>
+
+    <string-array name="titles">
+        <item>MainActivity</item>
+        <item>ObjectPrinter</item>
+    </string-array>
+
+</resources>
