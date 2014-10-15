@@ -1,4 +1,4 @@
-# FailFast
+# FailFast (Experimental)
 *FailFast* provides implicit contract checks to your methods.
 
 IntelliJ and Android Studio provide static inspections for methods and parameters annotated with `@NotNull`. When a method is called with a `null` value to a parameter marked as `NotNull`, a warning is presented. 
